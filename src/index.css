@@ -12,14 +12,9 @@ code {
     monospace;
 } */
 
-
-* {
-  font-family: times, monospace;
-}
-
 body{
   display: flex;
-  height: 95vh;
+  height: 100vh;
   justify-content: center;
   align-items: center;
   text-align: center;
