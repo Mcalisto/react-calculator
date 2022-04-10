@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './calculator.css'
 import Display from './display'
 import Button from './button'
+import keyboard_listener from './keyboard_listener.js';
 
 const initialState = {
 
@@ -14,25 +15,62 @@ const initialState = {
 
 }
 
+const kb_list = keyboard_listener(document);
+
 
 export default class Calculator extends Component {
 
   state = { ...initialState}
   constructor(props){
-    super(props)
+    super(props);
 
-    this.clearMemory = this.clearMemory.bind(this)
-    this.setOperation = this.setOperation.bind(this)
-    this.addDigit = this.addDigit.bind(this)
+    this.clearMemory = this.clearMemory.bind(this);
+    this.setOperation = this.setOperation.bind(this);
+    this.addDigit = this.addDigit.bind(this);
+    this.calculatorChange = this.calculatorChange.bind(this);
+
+    kb_list.subscribe(this.calculatorChange);
+
   }
 
+
   clearMemory(){
-    this.setState({...initialState})
+    this.setState({...initialState});
+  }
+
+  calculatorChange(key){
+
+    let call, isOpInput = false;
+
+    if(['1','2','3','4','5','6','7','8','9','0','.'].includes(key)){
+      call = 'addDigit';
+      isOpInput = true;
+
+    } else if(['+','-','*','/','=','Enter'].includes(key)){
+      call = 'setOperation';
+      isOpInput = true;
+    }
+    
+    const method_map = { 
+        'addDigit': this.addDigit,
+        'setOperation': this.setOperation,
+        'Escape': this.clearMemory
+      
+    };
+
+    if(isOpInput){
+      console.log(method_map[call], typeof(method_map[call]));
+      method_map[call](key);
+
+    } else{
+      method_map[key]();
+    }
+
+
   }
 
   setOperation(operation){
-
-      const equals = operation === '=';
+      const equals = operation === '=' || operation === 'Enter';
 
       this.setState({
         operation,
@@ -88,12 +126,11 @@ export default class Calculator extends Component {
           values
         })
       }
-
-
     
   }
 
   addDigit(n){
+
     if (n === '.' && this.state.displayValue.includes('.')) {
       return
     }
@@ -101,14 +138,15 @@ export default class Calculator extends Component {
     const currentValue = clearDisplay ? '' : this.state.displayValue
     const displayValue = currentValue + n
     this.setState({displayValue, clearDisplay:false})
-
+ 
     if (n !== ".") {
       const i = this.state.current
       const newValue = parseFloat(displayValue)
       const values = [...this.state.values]
-      values[i] = newValue
+      values[i] = newValue;
       this.setState({values})
     }
+
   }
 
   render() {
