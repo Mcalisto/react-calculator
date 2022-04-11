@@ -106,14 +106,16 @@ export default class Calculator extends Component {
           }
   
           values[0] = operations[currentOperation](values[0], values[1]);
+          
+          
         } catch (e) {
-          values[0] = this.state.values[0]
+          values[0] = this.state.values[0];
         }
   
         //values[1] = 0
-
+        
         this.setState({
-          displayValue: values[0],
+          displayValue: values[0] % 1 === 0 ?  values[0] : values[0].toFixed(Math.abs(values[0].toString().length+1 - 11)),
           //operation: equals ? null : operation,
           operation: currentOperation,
           current: equals ? 0 : 1,
@@ -127,11 +129,14 @@ export default class Calculator extends Component {
   addDigit(n){
 
     if (n === '.' && this.state.displayValue.includes('.')) {
-      return
+      return;
     }
     const clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay;
     const currentValue = clearDisplay ? '' : this.state.displayValue;
     const displayValue = currentValue + n;
+    
+    if(displayValue.length > 10)
+      return;
 
     this.setState({displayValue, clearDisplay:false})
  
@@ -140,7 +145,7 @@ export default class Calculator extends Component {
       const newValue = parseFloat(displayValue)
       const values = [...this.state.values]
       values[i] = newValue;
-      this.setState({values})
+      this.setState({values});
     //}
 
   }
