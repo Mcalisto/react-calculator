@@ -40,33 +40,28 @@ export default class Calculator extends Component {
 
   calculatorChange(key){
 
-    let call, isOpInput = false;
+    let call;
 
     if(['1','2','3','4','5','6','7','8','9','0','.'].includes(key)){
       call = 'addDigit';
-      isOpInput = true;
 
     } else if(['+','-','*','/','=','Enter'].includes(key)){
       call = 'setOperation';
-      isOpInput = true;
+
+    } else if(key === 'Escape'){
+      call = 'clearMemory';
     }
     
     const method_map = { 
         'addDigit': this.addDigit,
         'setOperation': this.setOperation,
-        'Escape': this.clearMemory
+        'clearMemory': this.clearMemory
       
     };
 
-    if(isOpInput){
-      console.log(method_map[call], typeof(method_map[call]));
+    if(method_map[call]){
       method_map[call](key);
-
-    } else{
-      method_map[key]();
     }
-
-
   }
 
   setOperation(operation){
@@ -116,7 +111,7 @@ export default class Calculator extends Component {
         }
   
         //values[1] = 0
-  
+
         this.setState({
           displayValue: values[0],
           //operation: equals ? null : operation,
@@ -134,18 +129,19 @@ export default class Calculator extends Component {
     if (n === '.' && this.state.displayValue.includes('.')) {
       return
     }
-    const clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay
-    const currentValue = clearDisplay ? '' : this.state.displayValue
-    const displayValue = currentValue + n
+    const clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay;
+    const currentValue = clearDisplay ? '' : this.state.displayValue;
+    const displayValue = currentValue + n;
+
     this.setState({displayValue, clearDisplay:false})
  
-    if (n !== ".") {
+    //if (n !== ".") {
       const i = this.state.current
       const newValue = parseFloat(displayValue)
       const values = [...this.state.values]
       values[i] = newValue;
       this.setState({values})
-    }
+    //}
 
   }
 
